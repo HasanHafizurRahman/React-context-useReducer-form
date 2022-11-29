@@ -5,17 +5,46 @@ const Form = () => {
         firstName: "",
         lastName: "",
         email: "",
-        gender: ""
+        gender: "",
+        education: "",
+        quantity: 0,
+        feedback: "",
+        term: false
     };
 
-    const reducer = () => {
-
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case "INPUT":  
+                return{
+                    ...state,
+                    [action.payload.name] : action.payload.value,
+                }
+            case "TOGGLE":  
+                return{
+                    ...state,
+                    term: !state.term
+                }
+            case "INCREASE":
+                return{
+                    ...state,
+                    quantity : state.quantity + 1
+                }
+            case "DECREASE":
+                return{
+                    ...state,
+                    quantity : state.quantity - 1
+                }
+        
+            default:
+               return state;
+        }
     }
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const submit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        console.log(state);
     }
     return (
         <div className='h-screen w-screen flex justify-center items-center overflow-auto'>
@@ -28,10 +57,17 @@ const Form = () => {
               First Name
             </label>
             <input
+              className='bg-slate-100 rounded'
               type='text'
               name='firstName'
               id='firstName'
-              
+              required
+              onBlur={
+                e => dispatch({
+                    type: "INPUT",
+                    payload: {name: e.target.name, value: e.target.value}
+                })
+              }
             />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
@@ -39,10 +75,17 @@ const Form = () => {
               Last Name
             </label>
             <input
+              className='bg-slate-100 rounded'
               type='text'
               name='lastName'
               id='lastName'
-            
+              required
+              onBlur={
+                e => dispatch({
+                    type: "INPUT",
+                    payload: {name: e.target.name, value: e.target.value}
+                })
+              }
             />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
@@ -50,10 +93,17 @@ const Form = () => {
               Email
             </label>
             <input
+              className='bg-slate-100 rounded'
               type='email'
               name='email'
               id='email'
-              
+              required
+              onBlur={
+                e => dispatch({
+                    type: "INPUT",
+                    payload: {name: e.target.name, value: e.target.value}
+                })
+              }
             />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
@@ -61,11 +111,17 @@ const Form = () => {
             <div className='flex gap-3'>
               <div>
                 <input
+                  className='bg-slate-100 rounded'
                   type='radio'
                   id='male'
                   name='gender'
                   value='male'
-                  
+                  onBlur={
+                    e => dispatch({
+                        type: "INPUT",
+                        payload: {name: e.target.name, value: e.target.value}
+                    })
+                  }
                 />
                 <label className='ml-2 text-lg' for='male'>
                   Male
@@ -73,11 +129,17 @@ const Form = () => {
               </div>
               <div>
                 <input
+                  className='bg-slate-100 rounded'
                   type='radio'
                   id='female'
                   name='gender'
                   value='female'
-                  
+                  onBlur={
+                    e => dispatch({
+                        type: "INPUT",
+                        payload: {name: e.target.name, value: e.target.value}
+                    })
+                  }
                 />
                 <label className='ml-2 text-lg' for='female'>
                   Female
@@ -85,11 +147,17 @@ const Form = () => {
               </div>
               <div>
                 <input
+                  className='bg-slate-100 rounded'
                   type='radio'
                   id='other'
                   name='gender'
                   value='other'
-                
+                  onBlur={
+                    e => dispatch({
+                        type: "INPUT",
+                        payload: {name: e.target.name, value: e.target.value}
+                    })
+                  }
                 />
                 <label className='ml-2 text-lg' for='other'>
                   Other
@@ -102,9 +170,16 @@ const Form = () => {
               Education
             </label>
             <select
+              className='bg-slate-100 rounded'
               name='education'
               id='education'
-             
+              onChange={
+                e => dispatch({
+                    type: "INPUT",
+                    payload: {name: e.target.name, value: e.target.value}
+                })
+              }
+              required
             >
               <option value='SSC'>SSC</option>
               <option value='HSC'>HSC</option>
@@ -115,13 +190,17 @@ const Form = () => {
           <div className='flex flex-col w-full max-w-xs'>
             <label className='mb-3'>Number of PCs</label>
             <div className='flex justify-between items-center gap-2 '>
-              <button className='bg-indigo-500 text-lg text-white rounded h-10 w-10 '>
+              <button className='bg-indigo-500 text-lg text-white rounded h-10 w-10' onClick={() => dispatch({
+                type: 'DECREASE'
+              })}>
                 -
               </button>
               <div className='border flex-1 flex justify-center items-center h-10 rounded-md border-gray-300'>
-                <span className='text-lg'>0</span>
+                <span className='text-lg'>{state.quantity}</span>
               </div>
-              <button className='bg-indigo-500 text-lg text-white rounded h-10 w-10'>
+              <button className='bg-indigo-500 text-lg text-white rounded h-10 w-10' onClick={() => dispatch({
+                type: "INCREASE"
+              })}>
                 +
               </button>
             </div>
@@ -131,6 +210,7 @@ const Form = () => {
               Feedback
             </label>
             <textarea
+              className='bg-slate-100 rounded'
               name='feedback'
               id='feedback'
               cols='30'
@@ -146,14 +226,16 @@ const Form = () => {
                 type='checkbox'
                 name='term'
                 id='terms'
-                
+                onClick={() => dispatch({
+                    type: "TOGGLE"
+                })}
               />
               <label for='terms'>I agree to terms and conditions</label>
             </div>
             <button
               className=' px-4 py-3 bg-indigo-500 rounded-md font-semibold text-white text-lg disabled:bg-gray-500'
               type='submit'
-              
+              disabled={!state.term}
             >
               Submit
             </button>
